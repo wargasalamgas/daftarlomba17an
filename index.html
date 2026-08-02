@@ -2,299 +2,994 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pendaftaran & Dashboard HUT RI Ke-81</title>
+    <!-- Chart.js Library untuk Diagram Pie -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS Library untuk Export Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- html2pdf Library untuk Export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --red-primary: #d32f2f;
-            --red-dark: #9a0007;
+            /* Palette Merah Putih Modern */
+            --red-main: #d32f2f;
+            --red-dark: #8e0000;
+            --red-light: #ff6659;
+            --grad-primary: linear-gradient(135deg, #e53935 0%, #b71c1c 100%);
+            --grad-header: linear-gradient(135deg, #1e1e24 0%, #2a0808 100%);
+            --grad-accent: linear-gradient(90deg, #d32f2f 0%, #ffffff 100%);
+            
             --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --border-color: #e5e7eb;
+            
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-md: 0 10px 25px -5px rgba(183, 28, 28, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+            --shadow-glow: 0 4px 20px rgba(229, 57, 53, 0.35);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            color: #333;
         }
 
-        /* Navigasi Tab */
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* Running Text / Marquee Banner Bar */
+        .running-text-container {
+            background: #b71c1c;
+            color: #ffffff;
+            overflow: hidden;
+            white-space: nowrap;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-bottom: none;
+            padding: 6px 0;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .running-text-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+            padding-left: 100%;
+        }
+
+        .running-text-container:hover .running-text-content {
+            animation-play-state: paused;
+        }
+
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* Hero Banner / Header */
+        .hero-banner {
+            background: var(--grad-primary);
+            color: white;
+            text-align: center;
+            padding: 18px 16px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header-logo {
+            max-width: 80px;
+            height: auto;
+            margin-bottom: 6px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+            border-radius: 6px;
+        }
+
+        .hero-banner h1 {
+            font-size: 20px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .hero-banner p {
+            font-size: 13px;
+            opacity: 0.95;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            margin-bottom: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        /* HEADER REALTIME WIDGET (Jam, Tanggal, Lokasi, Suhu, Database Status) */
+        .header-widgets {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 900px;
+            margin-top: 4px;
+        }
+
+        .widget-item {
+            background: rgba(0, 0, 0, 0.25);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        }
+
+        .widget-item svg {
+            width: 14px;
+            height: 14px;
+            fill: #ffffff;
+            flex-shrink: 0;
+        }
+
+        /* Database Status Indicator */
+        .db-status-widget {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .db-status-widget:hover {
+            background: rgba(0, 0, 0, 0.4);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            background-color: #eab308; /* Kuning (Connecting) */
+            box-shadow: 0 0 8px #eab308;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .status-dot.online {
+            background-color: #22c55e; /* Hijau (Online) */
+            box-shadow: 0 0 8px #22c55e;
+        }
+
+        .status-dot.offline {
+            background-color: #ef4444; /* Merah (Offline) */
+            box-shadow: 0 0 8px #ef4444;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* Animation & Styling Bendera Merah Putih Bergerak */
+        .flag-icon {
+            width: 22px;
+            height: 15px;
+            display: inline-block;
+            vertical-align: middle;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.3));
+            animation: waveFlag 1.8s ease-in-out infinite alternate;
+            transform-origin: left center;
+        }
+
+        .flag-icon.lg {
+            width: 26px;
+            height: 18px;
+        }
+
+        @keyframes waveFlag {
+            0% { transform: rotate(-3deg) skewY(-2deg) scaleY(0.95); }
+            50% { transform: rotate(3deg) skewY(2deg) scaleY(1.05); }
+            100% { transform: rotate(-3deg) skewY(-2deg) scaleY(0.95); }
+        }
+
+        /* Navigation Tabs */
         .nav-tabs {
             display: flex;
             justify-content: center;
             background-color: #ffffff;
-            border-bottom: 2px solid #e0e0e0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 9;
+            width: 100%;
+            box-shadow: var(--shadow-sm);
         }
 
         .tab-btn {
-            padding: 15px 30px;
+            flex: 1;
+            max-width: 320px;
+            padding: 12px 16px;
             border: none;
             background: none;
-            font-size: 16px;
-            font-weight: bold;
-            color: #666;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-muted);
             cursor: pointer;
             border-bottom: 3px solid transparent;
-            transition: all 0.3s;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--red-main);
+            background-color: rgba(229, 57, 53, 0.04);
         }
 
         .tab-btn.active {
-            color: var(--red-primary);
-            border-bottom: 3px solid var(--red-primary);
+            color: var(--red-main);
+            border-bottom-color: var(--red-main);
+            background-color: rgba(229, 57, 53, 0.06);
+        }
+
+        /* Main Content Layar Penuh */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            padding: 24px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
         .tab-content {
             display: none;
-            padding: 20px;
-            max-width: 1000px;
-            margin: 0 auto;
+            width: 100%;
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         .tab-content.active {
             display: block;
         }
 
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Card Form & Table Container */
         .card {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            border-top: 6px solid var(--red-primary);
-            margin-bottom: 20px;
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            margin-bottom: 24px;
         }
 
-        .header {
-            text-align: center;
-            border-bottom: 2px dashed #ccc;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .header h1 {
-            color: var(--red-primary);
-            margin: 0 0 5px 0;
-            font-size: 20px;
-            text-transform: uppercase;
+        /* Form Grid System */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
         }
 
         label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input[type="text"],
         input[type="tel"],
         select {
             width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
+            padding: 13px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
             font-size: 14px;
+            color: var(--text-main);
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        select:focus {
+            border-color: var(--red-main);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 4px rgba(229, 57, 53, 0.15);
+        }
+
+        select:disabled {
+            background-color: #f3f4f6;
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .info-box {
-            background-color: #fff8f8;
-            border-left: 4px solid var(--red-primary);
-            padding: 10px 15px;
-            margin-top: 5px;
-            font-size: 13px;
-            color: #555;
+            background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 5px solid var(--red-main);
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            color: var(--red-dark);
             display: none;
+            line-height: 1.5;
+            grid-column: span 2;
         }
 
+        /* Button Modern Gradasi */
         button.btn-submit {
             width: 100%;
-            background-color: var(--red-primary);
+            background: var(--grad-primary);
             color: white;
             border: none;
-            padding: 12px;
+            padding: 16px 24px;
             font-size: 16px;
-            font-weight: bold;
-            border-radius: 6px;
+            font-weight: 800;
+            border-radius: var(--radius-md);
             cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: var(--shadow-glow);
+            grid-column: span 2;
             margin-top: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
         }
 
         button.btn-submit:hover {
-            background-color: var(--red-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(229, 57, 53, 0.5);
         }
 
-        /* Dashboard Styles */
+        /* Dashboard Header & Admin Actions */
+        .dashboard-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-header {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0;
+        }
+
+        .admin-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-admin {
+            padding: 10px 18px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-print { background-color: #4b5563; }
+        .btn-print:hover { background-color: #374151; }
+
+        .btn-pdf { background-color: #dc2626; }
+        .btn-pdf:hover { background-color: #b91c1c; }
+
+        .btn-excel { background-color: #16a34a; }
+        .btn-excel:hover { background-color: #15803d; }
+
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+            width: 100%;
         }
 
         .stat-card {
             background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--red-primary);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 20px 24px;
+            border-radius: var(--radius-md);
+            border-top: 4px solid var(--red-main);
+            box-shadow: var(--shadow-sm);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+            border-left: 1px solid var(--border-color);
+            transition: transform 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
 
         .stat-card h3 {
-            margin: 0;
-            font-size: 24px;
-            color: var(--red-primary);
+            font-size: 32px;
+            color: var(--red-main);
+            font-weight: 800;
+            line-height: 1;
         }
 
         .stat-card p {
-            margin: 5px 0 0 0;
+            margin-top: 8px;
             font-size: 13px;
-            color: #666;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* GRID SECTION: DIAGRAM PIE & ANALISIS BERDAMPINGAN */
+        .analytics-grid-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+            width: 100%;
+        }
+
+        .analytics-card {
+            margin-bottom: 0 !important;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Styles Container Chart Pie Diagram */
+        .chart-container {
+            max-width: 360px;
+            margin: 0 auto;
+            position: relative;
+            padding: 10px;
+        }
+
+        .chart-card-title {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            text-align: center;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Styling Analisis Urutan Lomba */
+        .analysis-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 380px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .analysis-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            background: #fdfdfd;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            transition: all 0.2s ease;
+        }
+
+        .analysis-item:hover {
+            background: #fff5f5;
+            border-color: #ffcdd2;
+            transform: translateX(2px);
+        }
+
+        .analysis-rank-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rank-badge {
+            width: 26px;
+            height: 26px;
+            background: var(--red-main);
+            color: white;
+            font-size: 12px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
+        }
+
+        .rank-badge.top-1 { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .rank-badge.top-2 { background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .rank-badge.top-3 { background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+
+        .analysis-category-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .analysis-category-count {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--red-main);
+            background: rgba(229, 57, 53, 0.08);
+            padding: 4px 10px;
+            border-radius: 12px;
+        }
+
+        /* Search Input & Table Layout */
+        .search-box {
+            margin-bottom: 20px;
         }
 
         .table-responsive {
+            width: 100%;
             overflow-x: auto;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 14px;
             background: white;
-        }
-
-        th, td {
-            padding: 10px 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-
-        th {
-            background-color: var(--red-primary);
-            color: white;
             white-space: nowrap;
         }
 
-        tr:hover {
-            background-color: #f1f1f1;
+        th, td {
+            padding: 14px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .search-box {
-            margin-bottom: 15px;
+        th {
+            background: var(--grad-primary);
+            color: white;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            font-size: 12px;
         }
+
+        tr:nth-child(even) { background-color: #fbfbfb; }
+        tr:hover { background-color: rgba(229, 57, 53, 0.03); }
 
         .badge {
             background-color: #e8f5e9;
             color: #2e7d32;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
             font-size: 11px;
+            display: inline-block;
+            text-transform: uppercase;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            background: #ffffff;
+            font-weight: 500;
+        }
+
+        /* Mode Cetak / Print Styles */
+        @media print {
+            .running-text-container, .nav-tabs, .search-box, .admin-actions, .footer {
+                display: none !important;
+            }
+            .main-content {
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .analytics-grid-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-banner { padding: 14px 12px; }
+            .header-logo { max-width: 60px; }
+            .hero-banner h1 { font-size: 16px; }
+            .hero-banner p { font-size: 12px; margin-bottom: 8px; }
+            .header-widgets { gap: 6px; }
+            .widget-item { font-size: 10px; padding: 4px 8px; }
+            .main-content { padding: 14px; }
+            .card { padding: 20px 16px; border-radius: var(--radius-md); }
+            .form-grid { grid-template-columns: 1fr; gap: 16px; }
+            .form-group.full-width, .info-box, button.btn-submit { grid-column: span 1; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+            .stat-card { padding: 16px; }
+            .stat-card h3 { font-size: 24px; }
+            .chart-container { max-width: 100%; }
+            .dashboard-top-bar { flex-direction: column; align-items: flex-start; }
+            .admin-actions { width: 100%; }
+            .btn-admin { flex: 1; justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navigasi Utama -->
-    <div class="nav-tabs">
-        <button class="tab-btn active" onclick="openTab('form-tab')">📝 Form Pendaftaran</button>
-        <button class="tab-btn" onclick="openTab('dashboard-tab'); loadDashboardData();">📊 Dashboard Data</button>
-    </div>
+    <div class="app-container">
 
-    <!-- TAB 1: FORM PENDAFTARAN -->
-    <div id="form-tab" class="tab-content active">
-        <div class="card" style="max-width: 600px; margin: 0 auto;">
-            <div class="header">
-                <h1>Pendaftaran Semarak HUT RI Ke-81</h1>
-                <small>Griya Alam Sentul Blok C Salam</small>
-            </div>
-
-            <form id="formPendaftaran" onsubmit="submitForm(event)">
-                <div class="form-group">
-                    <label for="nama">Nama Lengkap Peserta:</label>
-                    <input type="text" id="nama" required placeholder="Masukkan nama peserta">
-                </div>
-
-                <div class="form-group">
-                    <label for="alamat">Nomor Rumah / Blok:</label>
-                    <input type="text" id="alamat" required placeholder="Contoh: Blok C No. 12">
-                </div>
-
-                <div class="form-group">
-                    <label for="whatsapp">Nomor WhatsApp / HP:</label>
-                    <input type="tel" id="whatsapp" required placeholder="08xxxxxxxxxx">
-                </div>
-
-                <div class="form-group">
-                    <label for="kategori">Kategori Peserta / Umur:</label>
-                    <select id="kategori" onchange="updateLomba()" required>
-                        <option value="">-- Pilih Kategori --</option>
-                        <option value="paud">PAUD, TK + SD (Maks. Kelas 1)</option>
-                        <option value="sd_putri">SD (Kelas 2 - 6) Putri</option>
-                        <option value="sd_putra">SD (Kelas 2 - 6) Putra</option>
-                        <option value="smp_putri">SMP (1 - 3) Putri</option>
-                        <option value="smp_putra">SMP (1 - 3) Putra</option>
-                        <option value="ibu_remaja_putri">Ibu - Ibu + Remaja Putri</option>
-                        <option value="bapak_remaja_putra">Bapak - Bapak + Remaja Putra</option>
-                        <option value="campuran">Campuran</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="lomba">Jenis Perlombaan:</label>
-                    <select id="lomba" onchange="showInfo()" required disabled>
-                        <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
-                    </select>
-                </div>
-
-                <div id="infoLomba" class="info-box"></div>
-
-                <button type="submit" id="btnSubmit" class="btn-submit">KIRIM PENDAFTARAN</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- TAB 2: DASHBOARD DATA -->
-    <div id="dashboard-tab" class="tab-content">
-        <h2>📊 Dashboard Rekap Pendaftaran Warga</h2>
-        
-        <!-- Grid Statistik -->
-        <div class="stats-grid" id="statsGrid">
-            <div class="stat-card">
-                <h3 id="totalPeserta">0</h3>
-                <p>Total Pendaftaran</p>
+        <!-- Running Text Banner -->
+        <div class="running-text-container">
+            <div class="running-text-content">
+                📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU
             </div>
         </div>
 
-        <!-- Filter & Tabel Data -->
-        <div class="card">
-            <div class="search-box">
-                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Cari nama, blok, atau perlombaan...">
+        <!-- Hero Header 17 Agustus -->
+        <div class="hero-banner">
+            <img src="logohut81.jpg" alt="Logo HUT RI ke-81" class="header-logo">
+            <span class="hero-badge">DIRGAHAYU REPUBLIK INDONESIA</span>
+            <h1>
+                <svg class="flag-icon lg" viewBox="0 0 600 400">
+                    <rect width="600" height="200" fill="#e53935"/>
+                    <rect y="200" width="600" height="200" fill="#ffffff"/>
+                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                </svg>
+                SEMARAK PERAYAAN HUT RI KE-81
+                <svg class="flag-icon lg" viewBox="0 0 600 400">
+                    <rect width="600" height="200" fill="#e53935"/>
+                    <rect y="200" width="600" height="200" fill="#ffffff"/>
+                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                </svg>
+            </h1>
+            <p>Griya Alam Sentul Blok C Salam</p>
+
+            <!-- WIDGET INTEGRASI REALTIME PADA HEADER -->
+            <div class="header-widgets">
+                <!-- Widget Tanggal & Waktu -->
+                <div class="widget-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+                    <span id="clockDisplay">Memuat Waktu...</span>
+                </div>
+
+                <!-- Widget Lokasi -->
+                <div class="widget-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5-2.5z"/></svg>
+                    <span id="locationDisplay">Mendeteksi Lokasi...</span>
+                </div>
+
+                <!-- Widget Suhu / Cuaca -->
+                <div class="widget-item">
+                    <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                    <span id="weatherDisplay">Memuat Suhu...</span>
+                </div>
+
+                <!-- Widget Status Koneksi Google Sheets Database -->
+                <div class="widget-item db-status-widget" onclick="checkDatabaseConnection()" title="Klik untuk tes ulang koneksi database">
+                    <span class="status-dot" id="dbStatusDot"></span>
+                    <span id="dbStatusText">Checking DB...</span>
+                </div>
             </div>
+        </div>
+
+        <!-- Navigation Tab -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="openTab('form-tab')">📝 Form Pendaftaran</button>
+            <button class="tab-btn" onclick="openTab('dashboard-tab'); loadDashboardData();">📊 Dashboard Data</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
             
-            <div class="table-responsive">
-                <table id="dataTable">
-                    <thead>
-                        <tr id="tableHeader">
-                            <th>Memuat data...</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr><td>Sedang mengambil data dari Google Sheets...</td></tr>
-                    </tbody>
-                </table>
+            <!-- TAB 1: FORM PENDAFTARAN -->
+            <div id="form-tab" class="tab-content active">
+                <div class="card">
+                    <form id="formPendaftaran" onsubmit="submitForm(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nama">Nama Lengkap Peserta</label>
+                                <input type="text" id="nama" required placeholder="Masukkan nama lengkap">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="alamat">Nomor Rumah / Blok</label>
+                                <input type="text" id="alamat" required placeholder="Contoh: Blok C No. 12">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="whatsapp">Nomor WhatsApp / HP</label>
+                                <input type="tel" id="whatsapp" required placeholder="08xxxxxxxxxx">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="kategori">Kategori Peserta / Umur</label>
+                                <select id="kategori" onchange="updateLomba()" required>
+                                    <option value="">-- Pilih Kategori --</option>
+                                    <option value="paud">PAUD, TK + SD (Maks. Kelas 1)</option>
+                                    <option value="sd_putri">SD (Kelas 2 - 6) Putri</option>
+                                    <option value="sd_putra">SD (Kelas 2 - 6) Putra</option>
+                                    <option value="smp_putri">SMP (1 - 3) Putri</option>
+                                    <option value="smp_putra">SMP (1 - 3) Putra</option>
+                                    <option value="ibu_remaja_putri">Ibu - Ibu + Remaja Putri</option>
+                                    <option value="bapak_remaja_putra">Bapak - Bapak + Remaja Putra</option>
+                                    <option value="campuran">Campuran</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lomba">Jenis Perlombaan</label>
+                                <select id="lomba" onchange="showInfo()" required disabled>
+                                    <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
+                                </select>
+                            </div>
+
+                            <div id="infoLomba" class="info-box"></div>
+
+                            <button type="submit" id="btnSubmit" class="btn-submit">
+                                <svg class="flag-icon" viewBox="0 0 600 400">
+                                    <rect width="600" height="200" fill="#e53935"/>
+                                    <rect y="200" width="600" height="200" fill="#ffffff"/>
+                                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                                </svg>
+                                <span>DAFTARKAN SEKARANG</span>
+                                <svg class="flag-icon" viewBox="0 0 600 400">
+                                    <rect width="600" height="200" fill="#e53935"/>
+                                    <rect y="200" width="600" height="200" fill="#ffffff"/>
+                                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
+
+            <!-- TAB 2: DASHBOARD DATA -->
+            <div id="dashboard-tab" class="tab-content">
+                <div class="dashboard-top-bar">
+                    <h2 class="dashboard-header">📊 Rekap Pendaftaran Warga</h2>
+                    <!-- Tombol Admin Export & Print -->
+                    <div class="admin-actions">
+                        <button class="btn-admin btn-print" onclick="actionPrint()">🖨️ Print</button>
+                        <button class="btn-admin btn-pdf" onclick="actionExportPDF()">📄 Download PDF</button>
+                        <button class="btn-admin btn-excel" onclick="actionExportExcel()">📊 Download Excel</button>
+                    </div>
+                </div>
+                
+                <!-- Grid Cards Stats -->
+                <div class="stats-grid" id="statsGrid">
+                    <div class="stat-card">
+                        <h3 id="totalPeserta">0</h3>
+                        <p>Total Pendaftaran</p>
+                    </div>
+                </div>
+
+                <!-- GRID SECTION: DIAGRAM PIE & ANALISIS URUTAN LOMBA BERDAMPINGAN -->
+                <div class="analytics-grid-section">
+                    <!-- CARD 1: DIAGRAM PIE KATEGORI -->
+                    <div class="card analytics-card">
+                        <h3 class="chart-card-title">🥧 Persentase Pendaftar Berdasarkan Kategori</h3>
+                        <div class="chart-container">
+                            <canvas id="categoryPieChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2: ANALISIS URUTAN LOMBA TERBANYAK -->
+                    <div class="card analytics-card">
+                        <h3 class="chart-card-title">🏆 Analisis Urutan Kategori Terfavorit</h3>
+                        <div class="analysis-content" id="analysisContent">
+                            <div class="analysis-item">
+                                <div class="analysis-rank-info">
+                                    <span class="rank-badge">-</span>
+                                    <span class="analysis-category-name">Menunggu data termuat...</span>
+                                </div>
+                                <span class="analysis-category-count">0 Peserta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Container -->
+                <div class="card">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Cari nama peserta, blok rumah, atau cabang lomba...">
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table id="dataTable">
+                            <thead>
+                                <tr id="tableHeader">
+                                    <th>Memuat data...</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tableBody">
+                                <tr><td>Sedang mengambil data dari Google Sheets...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            &copy; GusPur — Semarak Perayaan HUT RI Ke-81
         </div>
     </div>
 
     <script>
-        // URL Apps Script Web App Anda
+        // Script Google Sheet URL
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvlGL5U2TpKGvOF8bdrznHHYZ_p3T8qaEdqxsFgrwFdBDzwhDlcT0yu7FF4gcbDUCK/exec";
 
+        // Clock Realtime Function (Tanggal & Jam)
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+            const tanggal = now.toLocaleDateString('id-ID', options);
+            const jam = now.toLocaleTimeString('id-ID', { hour12: false });
+            document.getElementById('clockDisplay').innerText = `${tanggal}, ${jam} WIB`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Location & Weather API Realtime
+        async function fetchWeatherData(lat, lon) {
+            try {
+                const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
+                const geoData = await geoRes.json();
+                const city = geoData.address.village || geoData.address.suburb || geoData.address.city || "Sukaraja";
+                document.getElementById('locationDisplay').innerText = city;
+
+                const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+                const weatherData = await weatherRes.json();
+                const temp = Math.round(weatherData.current_weather.temperature);
+                
+                document.getElementById('weatherDisplay').innerText = `${temp}°C Berawan`;
+            } catch (err) {
+                document.getElementById('locationDisplay').innerText = "Sukaraja";
+                document.getElementById('weatherDisplay').innerText = "28°C Berawan";
+            }
+        }
+
+        function initLocationAndWeather() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (p) => fetchWeatherData(p.coords.latitude, p.coords.longitude),
+                    () => fetchWeatherData(-6.55, 106.85)
+                );
+            } else {
+                fetchWeatherData(-6.55, 106.85);
+            }
+        }
+        initLocationAndWeather();
+
+        // REALTIME GOOGLE SHEETS DATABASE CONNECTION CHECKER
+        async function checkDatabaseConnection() {
+            const dot = document.getElementById("dbStatusDot");
+            const text = document.getElementById("dbStatusText");
+
+            // Indikator Loading / Connecting
+            dot.className = "status-dot";
+            text.innerText = "Checking DB...";
+
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 detik timeout
+
+                const response = await fetch(SCRIPT_URL + "?action=getDashboard", { 
+                    method: "GET",
+                    signal: controller.signal 
+                });
+                clearTimeout(timeoutId);
+
+                if (response.ok) {
+                    dot.className = "status-dot online";
+                    text.innerText = "DB Connected";
+                } else {
+                    throw new Error("HTTP Error");
+                }
+            } catch (error) {
+                dot.className = "status-dot offline";
+                text.innerText = "DB Offline";
+            }
+        }
+
+        // Jalankan tes awal koneksi DB dan jalankan ulang secara berkala setiap 10 detik
+        checkDatabaseConnection();
+        setInterval(checkDatabaseConnection, 10000);
+
+        // Data Pilihan Lomba
         const dataLomba = {
             "paud": {
                 label: "PAUD, TK + SD (Maks. Kelas 1)",
@@ -313,7 +1008,7 @@
                     { nama: "Balap Kelereng", kuota: "Individu" },
                     { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
                     { nama: "Makan Kerupuk", kuota: "Individu" },
-                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol", kuota: "Individu" },
                     { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" }
                 ]
             },
@@ -324,7 +1019,7 @@
                     { nama: "Balap Kelereng", kuota: "Individu" },
                     { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
                     { nama: "Makan Kerupuk", kuota: "Individu" },
-                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol", kuota: "Individu" },
                     { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" }
                 ]
             },
@@ -335,8 +1030,6 @@
                     { nama: "Balap Kelereng", kuota: "Individu" },
                     { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
                     { nama: "Makan Kerupuk", kuota: "Individu" },
-                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
-                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" },
                     { nama: "Balap Karung", kuota: "Individu" },
                     { nama: "Meniup bola menggunakan stocking", kuota: "Individu" }
                 ]
@@ -348,8 +1041,6 @@
                     { nama: "Balap Kelereng", kuota: "Individu" },
                     { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
                     { nama: "Makan Kerupuk", kuota: "Individu" },
-                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
-                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" },
                     { nama: "Balap Karung", kuota: "Individu" },
                     { nama: "Meniup bola menggunakan stocking", kuota: "Individu" }
                 ]
@@ -358,11 +1049,11 @@
                 label: "Ibu - Ibu + Remaja Putri",
                 jadwal: "16-Aug | 14.00 - Selesai",
                 items: [
-                    { nama: "Memasukkan air ke dalam botol, mata menggunakan corong", kuota: "Individu" },
+                    { nama: "Memasukkan air ke dalam botol (corong)", kuota: "Individu" },
                     { nama: "Memasukkan benang ke jarum", kuota: "Individu" },
                     { nama: "Makeup", kuota: "Duo" },
                     { nama: "Estafet Holahop", kuota: "6 orang" },
-                    { nama: "Estafet memindahkan gelas pop ice menggunakan sumpit", kuota: "6 orang" },
+                    { nama: "Estafet memindahkan gelas pop ice", kuota: "6 orang" },
                     { nama: "Serok Beras", kuota: "Individu" }
                 ]
             },
@@ -370,7 +1061,7 @@
                 label: "Bapak - Bapak + Remaja Putra",
                 jadwal: "16-Aug | 14.00 - Selesai",
                 items: [
-                    { nama: "Memasukkan air ke dalam botol, mata menggunakan corong", kuota: "Individu" },
+                    { nama: "Memasukkan air ke dalam botol (corong)", kuota: "Individu" },
                     { nama: "Makan kerupuk menggunakan pancingan", kuota: "Duo" },
                     { nama: "Tarik Tambang", kuota: "7-8 orang" },
                     { nama: "Estafet Sarung", kuota: "6 Orang" },
@@ -425,7 +1116,7 @@
             if (key && idx !== "") {
                 const data = dataLomba[key];
                 const item = data.items[idx];
-                infoBox.innerHTML = `<strong>Jadwal:</strong> ${data.jadwal} | <strong>Jumlah Peserta:</strong> ${item.kuota}`;
+                infoBox.innerHTML = `📅 <strong>Jadwal:</strong> ${data.jadwal} &nbsp;|&nbsp; 👥 <strong>Peserta:</strong> ${item.kuota}`;
                 infoBox.style.display = "block";
             } else {
                 infoBox.style.display = "none";
@@ -436,15 +1127,16 @@
             e.preventDefault();
             const btn = document.getElementById("btnSubmit");
             btn.disabled = true;
-            btn.innerText = "Mengirim...";
+            btn.innerHTML = "<span>MENGIRIM PENDAFTARAN...</span>";
 
+            const namaPeserta = document.getElementById("nama").value;
             const key = document.getElementById("kategori").value;
             const idx = document.getElementById("lomba").value;
             const item = dataLomba[key].items[idx];
 
             const formData = {
                 action: "simpan",
-                nama: document.getElementById("nama").value,
+                nama: namaPeserta,
                 alamat: document.getElementById("alamat").value,
                 whatsapp: document.getElementById("whatsapp").value,
                 kategoriLabel: dataLomba[key].label,
@@ -453,7 +1145,8 @@
                 kuota: item.kuota
             };
 
-            // Mengirim data menggunakan API Fetch ke Apps Script
+            const flagSvg = `<svg class="flag-icon" viewBox="0 0 600 400"><rect width="600" height="200" fill="#e53935"/><rect y="200" width="600" height="200" fill="#ffffff"/><rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/></svg>`;
+
             fetch(SCRIPT_URL, {
                 method: "POST",
                 mode: "no-cors",
@@ -462,17 +1155,143 @@
             })
             .then(() => {
                 btn.disabled = false;
-                btn.innerText = "KIRIM PENDAFTARAN";
-                alert("✅ Pendaftaran berhasil dikirim!");
+                btn.innerHTML = `${flagSvg} <span>DAFTARKAN SEKARANG</span> ${flagSvg}`;
+                alert(`🎉 Selamat, ${namaPeserta}! Pendaftaran Anda telah berhasil.\n\nTerima kasih telah ikut serta dalam Perayaan Semarak Kemerdekaan Warga Salam!`);
                 document.getElementById("formPendaftaran").reset();
                 document.getElementById("lomba").disabled = true;
                 document.getElementById("infoLomba").style.display = "none";
+                
+                // Refresh status database setelah menyimpan data
+                checkDatabaseConnection();
             })
             .catch(err => {
                 btn.disabled = false;
-                btn.innerText = "KIRIM PENDAFTARAN";
-                alert("❌ Terjadi kesalahan: " + err);
+                btn.innerHTML = `${flagSvg} <span>DAFTARKAN SEKARANG</span> ${flagSvg}`;
+                alert("❌ Gagal mengirim pendaftaran: " + err);
             });
+        }
+
+        // Variable global chart agar dapat diperbarui
+        let categoryPieChartInstance = null;
+
+        function renderPieChart(stats) {
+            const ctx = document.getElementById('categoryPieChart').getContext('2d');
+            
+            const labels = Object.keys(stats);
+            const dataValues = Object.values(stats);
+
+            if (categoryPieChartInstance) {
+                categoryPieChartInstance.destroy();
+            }
+
+            const chartColors = [
+                '#e53935', '#1e88e5', '#43a047', '#fb8c00', 
+                '#8e24aa', '#00acc1', '#fdd835', '#d81b60', '#3949ab'
+            ];
+
+            categoryPieChartInstance = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        backgroundColor: chartColors.slice(0, labels.length),
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 11, family: 'sans-serif', weight: '600' },
+                                boxWidth: 12,
+                                padding: 10
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
+                                    return ` ${label}: ${value} Peserta (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                },
+                plugins: [{
+                    id: 'datalabels',
+                    afterDraw(chart) {
+                        const { ctx, chartArea: { width, height } } = chart;
+                        chart.data.datasets.forEach((dataset, i) => {
+                            chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
+                                const { x, y } = datapoint.tooltipPosition();
+                                const value = dataset.data[index];
+                                
+                                if (value > 0) {
+                                    ctx.fillStyle = '#ffffff';
+                                    ctx.font = 'bold 11px sans-serif';
+                                    ctx.textAlign = 'center';
+                                    ctx.textBaseline = 'middle';
+                                    
+                                    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+                                    ctx.shadowBlur = 4;
+                                    ctx.fillText(value + ' Peserta', x, y);
+                                    ctx.shadowBlur = 0;
+                                }
+                            });
+                        });
+                    }
+                }]
+            });
+        }
+
+        // Fungsi Render Analisis Urutan Lomba Terbanyak
+        function renderAnalysisList(stats) {
+            const container = document.getElementById('analysisContent');
+            
+            // Ubah object stats menjadi array [ [namaKategori, jumlah], ... ] lalu urutkan dari terbesar ke terkecil
+            const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
+
+            if (sortedStats.length === 0 || sortedStats.every(item => item[1] === 0)) {
+                container.innerHTML = `
+                    <div class="analysis-item">
+                        <div class="analysis-rank-info">
+                            <span class="rank-badge">-</span>
+                            <span class="analysis-category-name">Belum ada data pendaftar</span>
+                        </div>
+                        <span class="analysis-category-count">0 Peserta</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            sortedStats.forEach(([kategori, jumlah], index) => {
+                const rank = index + 1;
+                let rankClass = '';
+                if (rank === 1) rankClass = 'top-1';
+                else if (rank === 2) rankClass = 'top-2';
+                else if (rank === 3) rankClass = 'top-3';
+
+                html += `
+                    <div class="analysis-item">
+                        <div class="analysis-rank-info">
+                            <span class="rank-badge ${rankClass}">${rank}</span>
+                            <span class="analysis-category-name">${kategori}</span>
+                        </div>
+                        <span class="analysis-category-count">${jumlah} Peserta</span>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
         }
 
         function loadDashboardData() {
@@ -484,14 +1303,12 @@
                     return;
                 }
 
-                // Render Header Tabel
                 const thead = document.getElementById("tableHeader");
                 thead.innerHTML = data.headers.map(h => `<th>${h}</th>`).join('');
 
-                // Render Isi Tabel
                 const tbody = document.getElementById("tableBody");
                 if (!data.rows || data.rows.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Belum ada pendaftaran.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Belum ada pendaftaran yang masuk.</td></tr>';
                 } else {
                     tbody.innerHTML = data.rows.map(row => {
                         return `<tr>${row.map((col, idx) => {
@@ -501,7 +1318,6 @@
                     }).join('');
                 }
 
-                // Render Statistik Total
                 document.getElementById("totalPeserta").innerText = data.totalPeserta || 0;
                 
                 const statsGrid = document.getElementById("statsGrid");
@@ -521,6 +1337,9 @@
                             </div>
                         `;
                     });
+
+                    renderPieChart(data.stats);
+                    renderAnalysisList(data.stats);
                 }
             })
             .catch(err => console.log("Gagal memuat dashboard:", err));
@@ -532,6 +1351,44 @@
             rows.forEach(row => {
                 const text = row.innerText.toLowerCase();
                 row.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+
+        // ==================== FITUR ADMIN & EXPORT ====================
+        function checkAdminAuth(callback) {
+            const pwd = prompt("🔒 Masukkan Password Admin untuk melanjutkan:");
+            if (pwd === "admin123") {
+                callback();
+            } else if (pwd !== null) {
+                alert("❌ Password Salah! Akses ditolak.");
+            }
+        }
+
+        function actionPrint() {
+            checkAdminAuth(() => {
+                window.print();
+            });
+        }
+
+        function actionExportExcel() {
+            checkAdminAuth(() => {
+                const table = document.getElementById("dataTable");
+                const wb = XLSX.utils.table_to_book(table, { sheet: "Rekap Pendaftaran" });
+                XLSX.writeFile(wb, "Rekap_Pendaftaran_HUT_RI_81.xlsx");
+            });
+        }
+
+        function actionExportPDF() {
+            checkAdminAuth(() => {
+                const element = document.getElementById("dashboard-tab");
+                const opt = {
+                    margin:       0.3,
+                    filename:     'Rekap_Pendaftaran_HUT_RI_81.pdf',
+                    image:        { type: 'jpeg', quality: 0.98 },
+                    html2canvas:  { scale: 2 },
+                    jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
+                };
+                html2pdf().set(opt).from(element).save();
             });
         }
     </script>

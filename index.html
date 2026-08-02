@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran & Dashboard HUT RI Ke-81</title>
+    <style>
+        :root {
+            --red-primary: #d32f2f;
+            --red-dark: #9a0007;
+            --bg-color: #f4f6f9;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        /* Navigasi Tab */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            background-color: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .tab-btn {
+            padding: 15px 30px;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: var(--red-primary);
+            border-bottom: 3px solid var(--red-primary);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            border-top: 6px solid var(--red-primary);
+            margin-bottom: 20px;
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--red-primary);
+            margin: 0 0 5px 0;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        .info-box {
+            background-color: #fff8f8;
+            border-left: 4px solid var(--red-primary);
+            padding: 10px 15px;
+            margin-top: 5px;
+            font-size: 13px;
+            color: #555;
+            display: none;
+        }
+
+        button.btn-submit {
+            width: 100%;
+            background-color: var(--red-primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button.btn-submit:hover {
+            background-color: var(--red-dark);
+        }
+
+        /* Dashboard Styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--red-primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--red-primary);
+        }
+
+        .stat-card p {
+            margin: 5px 0 0 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--red-primary);
+            color: white;
+            white-space: nowrap;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .search-box {
+            margin-bottom: 15px;
+        }
+
+        .badge {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigasi Utama -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="openTab('form-tab')">📝 Form Pendaftaran</button>
+        <button class="tab-btn" onclick="openTab('dashboard-tab'); loadDashboardData();">📊 Dashboard Data</button>
+    </div>
+
+    <!-- TAB 1: FORM PENDAFTARAN -->
+    <div id="form-tab" class="tab-content active">
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <div class="header">
+                <h1>Pendaftaran Semarak HUT RI Ke-81</h1>
+                <small>Griya Alam Sentul Blok C Salam</small>
+            </div>
+
+            <form id="formPendaftaran" onsubmit="submitForm(event)">
+                <div class="form-group">
+                    <label for="nama">Nama Lengkap Peserta:</label>
+                    <input type="text" id="nama" required placeholder="Masukkan nama peserta">
+                </div>
+
+                <div class="form-group">
+                    <label for="alamat">Nomor Rumah / Blok:</label>
+                    <input type="text" id="alamat" required placeholder="Contoh: Blok C No. 12">
+                </div>
+
+                <div class="form-group">
+                    <label for="whatsapp">Nomor WhatsApp / HP:</label>
+                    <input type="tel" id="whatsapp" required placeholder="08xxxxxxxxxx">
+                </div>
+
+                <div class="form-group">
+                    <label for="kategori">Kategori Peserta / Umur:</label>
+                    <select id="kategori" onchange="updateLomba()" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="paud">PAUD, TK + SD (Maks. Kelas 1)</option>
+                        <option value="sd_putri">SD (Kelas 2 - 6) Putri</option>
+                        <option value="sd_putra">SD (Kelas 2 - 6) Putra</option>
+                        <option value="smp_putri">SMP (1 - 3) Putri</option>
+                        <option value="smp_putra">SMP (1 - 3) Putra</option>
+                        <option value="ibu_remaja_putri">Ibu - Ibu + Remaja Putri</option>
+                        <option value="bapak_remaja_putra">Bapak - Bapak + Remaja Putra</option>
+                        <option value="campuran">Campuran</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="lomba">Jenis Perlombaan:</label>
+                    <select id="lomba" onchange="showInfo()" required disabled>
+                        <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
+                    </select>
+                </div>
+
+                <div id="infoLomba" class="info-box"></div>
+
+                <button type="submit" id="btnSubmit" class="btn-submit">KIRIM PENDAFTARAN</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TAB 2: DASHBOARD DATA -->
+    <div id="dashboard-tab" class="tab-content">
+        <h2>📊 Dashboard Rekap Pendaftaran Warga</h2>
+        
+        <!-- Grid Statistik -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <h3 id="totalPeserta">0</h3>
+                <p>Total Pendaftaran</p>
+            </div>
+        </div>
+
+        <!-- Filter & Tabel Data -->
+        <div class="card">
+            <div class="search-box">
+                <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Cari nama, blok, atau perlombaan...">
+            </div>
+            
+            <div class="table-responsive">
+                <table id="dataTable">
+                    <thead>
+                        <tr id="tableHeader">
+                            <th>Memuat data...</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td>Sedang mengambil data dari Google Sheets...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL Apps Script Web App Anda
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvlGL5U2TpKGvOF8bdrznHHYZ_p3T8qaEdqxsFgrwFdBDzwhDlcT0yu7FF4gcbDUCK/exec";
+
+        const dataLomba = {
+            "paud": {
+                label: "PAUD, TK + SD (Maks. Kelas 1)",
+                jadwal: "17-Aug | 08.00 - Selesai",
+                items: [
+                    { nama: "Memindahkan 5pcs bendera", kuota: "Individu" },
+                    { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
+                    { nama: "Melempar bola ke baskom", kuota: "Individu" },
+                    { nama: "Bowling", kuota: "Individu" }
+                ]
+            },
+            "sd_putri": {
+                label: "SD (Kelas 2 - 6) Putri",
+                jadwal: "17-Aug | 08.00 - Selesai",
+                items: [
+                    { nama: "Balap Kelereng", kuota: "Individu" },
+                    { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
+                    { nama: "Makan Kerupuk", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" }
+                ]
+            },
+            "sd_putra": {
+                label: "SD (Kelas 2 - 6) Putra",
+                jadwal: "17-Aug | 08.00 - Selesai",
+                items: [
+                    { nama: "Balap Kelereng", kuota: "Individu" },
+                    { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
+                    { nama: "Makan Kerupuk", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" }
+                ]
+            },
+            "smp_putri": {
+                label: "SMP (1 - 3) Putri",
+                jadwal: "17-Aug | 08.00 - Selesai",
+                items: [
+                    { nama: "Balap Kelereng", kuota: "Individu" },
+                    { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
+                    { nama: "Makan Kerupuk", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" },
+                    { nama: "Balap Karung", kuota: "Individu" },
+                    { nama: "Meniup bola menggunakan stocking", kuota: "Individu" }
+                ]
+            },
+            "smp_putra": {
+                label: "SMP (1 - 3) Putra",
+                jadwal: "17-Aug | 08.00 - Selesai",
+                items: [
+                    { nama: "Balap Kelereng", kuota: "Individu" },
+                    { nama: "Meniup bola di atas cup pop ice berisi air", kuota: "Individu" },
+                    { nama: "Makan Kerupuk", kuota: "Individu" },
+                    { nama: "Memasukkan 5 sedotan ke dalam botol (jepit hidup + mulut)", kuota: "Individu" },
+                    { nama: "Membawa balon (jepit di kaki) sambil berjalan", kuota: "Individu" },
+                    { nama: "Balap Karung", kuota: "Individu" },
+                    { nama: "Meniup bola menggunakan stocking", kuota: "Individu" }
+                ]
+            },
+            "ibu_remaja_putri": {
+                label: "Ibu - Ibu + Remaja Putri",
+                jadwal: "16-Aug | 14.00 - Selesai",
+                items: [
+                    { nama: "Memasukkan air ke dalam botol, mata menggunakan corong", kuota: "Individu" },
+                    { nama: "Memasukkan benang ke jarum", kuota: "Individu" },
+                    { nama: "Makeup", kuota: "Duo" },
+                    { nama: "Estafet Holahop", kuota: "6 orang" },
+                    { nama: "Estafet memindahkan gelas pop ice menggunakan sumpit", kuota: "6 orang" },
+                    { nama: "Serok Beras", kuota: "Individu" }
+                ]
+            },
+            "bapak_remaja_putra": {
+                label: "Bapak - Bapak + Remaja Putra",
+                jadwal: "16-Aug | 14.00 - Selesai",
+                items: [
+                    { nama: "Memasukkan air ke dalam botol, mata menggunakan corong", kuota: "Individu" },
+                    { nama: "Makan kerupuk menggunakan pancingan", kuota: "Duo" },
+                    { nama: "Tarik Tambang", kuota: "7-8 orang" },
+                    { nama: "Estafet Sarung", kuota: "6 Orang" },
+                    { nama: "Mengeluarkan bola dari kardus", kuota: "Individu" },
+                    { nama: "Serok Beras", kuota: "Individu" }
+                ]
+            },
+            "campuran": {
+                label: "Campuran",
+                jadwal: "16-Aug | 07.30 - 11.00 WIB",
+                items: [
+                    { nama: "Kocokan Volley", kuota: "24 orang" }
+                ]
+            }
+        };
+
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function updateLomba() {
+            const kategoriSelect = document.getElementById("kategori");
+            const lombaSelect = document.getElementById("lomba");
+            const infoBox = document.getElementById("infoLomba");
+            const key = kategoriSelect.value;
+
+            lombaSelect.innerHTML = '<option value="">-- Pilih Jenis Lomba --</option>';
+            infoBox.style.display = "none";
+
+            if (key && dataLomba[key]) {
+                lombaSelect.disabled = false;
+                dataLomba[key].items.forEach((item, index) => {
+                    let option = document.createElement("option");
+                    option.value = index;
+                    option.textContent = item.nama;
+                    lombaSelect.appendChild(option);
+                });
+            } else {
+                lombaSelect.disabled = true;
+                lombaSelect.innerHTML = '<option value="">-- Pilih Kategori Terlebih Dahulu --</option>';
+            }
+        }
+
+        function showInfo() {
+            const key = document.getElementById("kategori").value;
+            const idx = document.getElementById("lomba").value;
+            const infoBox = document.getElementById("infoLomba");
+
+            if (key && idx !== "") {
+                const data = dataLomba[key];
+                const item = data.items[idx];
+                infoBox.innerHTML = `<strong>Jadwal:</strong> ${data.jadwal} | <strong>Jumlah Peserta:</strong> ${item.kuota}`;
+                infoBox.style.display = "block";
+            } else {
+                infoBox.style.display = "none";
+            }
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            const btn = document.getElementById("btnSubmit");
+            btn.disabled = true;
+            btn.innerText = "Mengirim...";
+
+            const key = document.getElementById("kategori").value;
+            const idx = document.getElementById("lomba").value;
+            const item = dataLomba[key].items[idx];
+
+            const formData = {
+                action: "simpan",
+                nama: document.getElementById("nama").value,
+                alamat: document.getElementById("alamat").value,
+                whatsapp: document.getElementById("whatsapp").value,
+                kategoriLabel: dataLomba[key].label,
+                lombaLabel: item.nama,
+                jadwal: dataLomba[key].jadwal,
+                kuota: item.kuota
+            };
+
+            // Mengirim data menggunakan API Fetch ke Apps Script
+            fetch(SCRIPT_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(formData)
+            })
+            .then(() => {
+                btn.disabled = false;
+                btn.innerText = "KIRIM PENDAFTARAN";
+                alert("✅ Pendaftaran berhasil dikirim!");
+                document.getElementById("formPendaftaran").reset();
+                document.getElementById("lomba").disabled = true;
+                document.getElementById("infoLomba").style.display = "none";
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerText = "KIRIM PENDAFTARAN";
+                alert("❌ Terjadi kesalahan: " + err);
+            });
+        }
+
+        function loadDashboardData() {
+            fetch(SCRIPT_URL + "?action=getDashboard")
+            .then(res => res.json())
+            .then(data => {
+                if(data.error) {
+                    alert("Error: " + data.error);
+                    return;
+                }
+
+                // Render Header Tabel
+                const thead = document.getElementById("tableHeader");
+                thead.innerHTML = data.headers.map(h => `<th>${h}</th>`).join('');
+
+                // Render Isi Tabel
+                const tbody = document.getElementById("tableBody");
+                if (!data.rows || data.rows.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;">Belum ada pendaftaran.</td></tr>';
+                } else {
+                    tbody.innerHTML = data.rows.map(row => {
+                        return `<tr>${row.map((col, idx) => {
+                            if(idx === 8) return `<td><span class="badge">${col}</span></td>`;
+                            return `<td>${col}</td>`;
+                        }).join('')}</tr>`;
+                    }).join('');
+                }
+
+                // Render Statistik Total
+                document.getElementById("totalPeserta").innerText = data.totalPeserta || 0;
+                
+                const statsGrid = document.getElementById("statsGrid");
+                statsGrid.innerHTML = `
+                    <div class="stat-card">
+                        <h3>${data.totalPeserta || 0}</h3>
+                        <p>Total Pendaftaran</p>
+                    </div>
+                `;
+
+                if(data.stats) {
+                    Object.keys(data.stats).forEach(kat => {
+                        statsGrid.innerHTML += `
+                            <div class="stat-card">
+                                <h3>${data.stats[kat]}</h3>
+                                <p>${kat}</p>
+                            </div>
+                        `;
+                    });
+                }
+            })
+            .catch(err => console.log("Gagal memuat dashboard:", err));
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const rows = document.querySelectorAll("#tableBody tr");
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+</body>
+</html>

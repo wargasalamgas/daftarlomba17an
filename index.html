@@ -594,6 +594,15 @@
             display: flex;
             flex-direction: column;
         }
+        .analysis-card, .favorite-card {
+            min-height: 430px;
+        }
+        .favorite-card {
+            background: linear-gradient(145deg, #fff, #f7fbff);
+        }
+        .favorite-card canvas {
+            height: 360px !important;
+        }
 
         .chart-container {
             width: 100%;
@@ -788,7 +797,7 @@
         <!-- Running Text Banner -->
         <div class="running-text-container">
             <div class="running-text-content">
-                📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU... HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU... HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 "Merdeka itu menang, RUKUN ITU JUARA." ......."Lomba boleh seru, RUKUN NOMOR SATU."........"Beda kepala satu tujuan, warga RT GUYUB dan RUKUN.",,,,,,,,,,,,"Kemerdekaan sejati dimulai dari SENYUM TETANGGA SEBELAH."
+                📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU... HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU...HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 "Merdeka itu menang, RUKUN ITU JUARA." ......."Lomba boleh seru, RUKUN NOMOR SATU."........"Beda kepala satu tujuan, warga RT GUYUB dan RUKUN.",,,,,,,,,,,,"Kemerdekaan sejati dimulai dari SENYUM TETANGGA SEBELAH."
             </div>
         </div>
 
@@ -956,16 +965,10 @@
                     </div>
                 </div>
 
+                <!-- Bagian Grid Analisis & Grafik Terfavorit -->
                 <div class="analytics-grid-section">
-                    <div class="card analytics-card">
-                        <h3 class="chart-card-title">📊 Pendaftar Berdasarkan Kategori</h3>
-                        <div class="chart-container">
-                            <canvas id="categoryBarChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="card analytics-card">
-                        <h3 class="chart-card-title">🏆 Urutan Yang Sudah Mendaftar Kategori Peserta/Umur</h3>
+                    <div class="card analytics-card analysis-card">
+                        <h3 class="chart-card-title">🏆 Analisis Urutan Kategori Terfavorit</h3>
                         <div class="analysis-content" id="analysisContent">
                             <div class="analysis-item">
                                 <div class="analysis-rank-info">
@@ -976,8 +979,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="card analytics-card favorite-card">
+                        <h3 class="chart-card-title">❤️ Lomba Yang Menjadi Favorit Peserta</h3>
+                        <div class="chart-container"><canvas id="favoriteChart"></canvas></div>
+                    </div>
                 </div>
 
+                <!-- Tabel Peserta Dipindah ke Bawah -->
                 <div class="card">
                     <div class="search-box">
                         <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Cari nama peserta, blok rumah, atau cabang lomba...">
@@ -1006,6 +1015,8 @@
     </div>
 
     <script>
+        let favoriteChart = null;
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6sEoy0hY9098oUwP-jhSlnzfcJl4o6e4O_xXjgO1tVgtNcnzCWFYGKzkT4k4j9oG2/exec";
 
         function updateClock() {
@@ -1286,63 +1297,6 @@
             });
         }
 
-        let categoryBarChartInstance = null;
-
-        function renderBarChart(stats) {
-            const ctx = document.getElementById('categoryBarChart').getContext('2d');
-            const labels = Object.keys(stats);
-            const dataValues = Object.values(stats);
-
-            if (categoryBarChartInstance) {
-                categoryBarChartInstance.destroy();
-            }
-
-            const chartColors = [
-                '#e53935', '#1e88e5', '#43a047', '#fb8c00', 
-                '#8e24aa', '#00acc1', '#fdd835', '#d81b60', '#3949ab'
-            ];
-
-            categoryBarChartInstance = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Jumlah Peserta',
-                        data: dataValues,
-                        backgroundColor: chartColors.slice(0, labels.length),
-                        borderColor: chartColors.slice(0, labels.length),
-                        borderWidth: 1,
-                        borderRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return ` Jumlah: ${context.raw} Peserta`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: { precision: 0, font: { size: 11, weight: '600' } },
-                            grid: { color: '#e5e7eb' }
-                        },
-                        x: {
-                            ticks: { font: { size: 10, weight: '600' }, maxRotation: 45, minRotation: 0 },
-                            grid: { display: false }
-                        }
-                    }
-                }
-            });
-        }
-
         function renderAnalysisList(stats) {
             const container = document.getElementById('analysisContent');
             const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
@@ -1426,11 +1380,41 @@
                         `;
                     });
 
-                    renderBarChart(data.stats);
                     renderAnalysisList(data.stats);
+                    renderFavoriteChart(data.rows, data.headers);
                 }
             })
             .catch(err => console.log("Gagal memuat dashboard:", err));
+        }
+
+        function renderFavoriteChart(rows, headers){
+            const idx = headers.findIndex(h => String(h).toLowerCase().includes("jenis perlombaan") || String(h).toLowerCase().includes("lomba"));
+            if(idx === -1 || !document.getElementById("favoriteChart")) return;
+            const s = {};
+            rows.forEach(r => { const v = r[idx]; if(v) s[v] = (s[v] || 0) + 1; });
+            const ctx = document.getElementById("favoriteChart").getContext("2d");
+            if(favoriteChart) favoriteChart.destroy();
+            favoriteChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: Object.keys(s),
+                    datasets: [{
+                        label: "Jumlah Peserta",
+                        data: Object.values(s),
+                        backgroundColor: ["#2563EB","#10B981","#F59E0B","#EF4444","#8B5CF6","#06B6D4","#EC4899","#84CC16","#F97316"],
+                        borderColor: "#fff",
+                        borderWidth: 2,
+                        borderRadius: 12,
+                        hoverBorderWidth: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+                }
+            });
         }
 
         function filterTable() {

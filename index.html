@@ -2,9 +2,10 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- DIPERBAIKI: Mengizinkan user-scalable agar ramah aksesibilitas mobile & tablet -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pendaftaran & Dashboard HUT RI Ke-81</title>
-    <!-- Chart.js Library untuk Diagram Pie -->
+    <!-- Chart.js Library untuk Diagram -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- SheetJS Library untuk Export Excel -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -74,7 +75,7 @@
         .running-text-content {
             display: inline-block;
             white-space: nowrap;
-            animation: marquee 25s linear infinite;
+            animation: marquee 45s linear infinite;
             padding-left: 100%;
         }
 
@@ -91,22 +92,40 @@
         .hero-banner {
             background: var(--grad-primary);
             color: white;
-            text-align: center;
-            padding: 18px 16px;
+            padding: 20px 24px;
             position: relative;
             overflow: hidden;
             box-shadow: var(--shadow-md);
             display: flex;
-            flex-direction: column;
             align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .header-logo {
-            max-width: 80px;
+        .hero-logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .hero-logo {
+            width: 120px;
             height: auto;
-            margin-bottom: 6px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+            max-height: 90px;
+            object-fit: contain;
             border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            background-color: #d32f2f;
+        }
+
+        .hero-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
         }
 
         .hero-banner h1 {
@@ -143,7 +162,7 @@
             border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
-        /* HEADER REALTIME WIDGET (Jam, Tanggal, Lokasi, Suhu, Database Status) */
+        /* HEADER REALTIME WIDGET */
         .header-widgets {
             display: flex;
             align-items: center;
@@ -151,7 +170,6 @@
             gap: 10px;
             flex-wrap: wrap;
             width: 100%;
-            max-width: 900px;
             margin-top: 4px;
         }
 
@@ -177,7 +195,6 @@
             flex-shrink: 0;
         }
 
-        /* Database Status Indicator */
         .db-status-widget {
             cursor: pointer;
             transition: all 0.2s ease;
@@ -192,18 +209,18 @@
             height: 8px;
             border-radius: 50%;
             display: inline-block;
-            background-color: #eab308; /* Kuning (Connecting) */
+            background-color: #eab308;
             box-shadow: 0 0 8px #eab308;
             animation: pulse 1.5s infinite alternate;
         }
 
         .status-dot.online {
-            background-color: #22c55e; /* Hijau (Online) */
+            background-color: #22c55e;
             box-shadow: 0 0 8px #22c55e;
         }
 
         .status-dot.offline {
-            background-color: #ef4444; /* Merah (Offline) */
+            background-color: #ef4444;
             box-shadow: 0 0 8px #ef4444;
             animation: none;
         }
@@ -213,7 +230,78 @@
             100% { opacity: 1; }
         }
 
-        /* Animation & Styling Bendera Merah Putih Bergerak */
+        /* MODERN COUNTDOWN WIDGET STYLING */
+        .header-countdown-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(142, 0, 0, 0.85) 0%, rgba(80, 0, 0, 0.9) 100%);
+            border: 1.5px solid rgba(255, 255, 255, 0.35);
+            border-radius: var(--radius-lg);
+            padding: 12px 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(8px);
+            flex-shrink: 0;
+        }
+
+        .countdown-title {
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #ffccd5;
+            margin-bottom: 6px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .countdown-boxes {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .countdown-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 6px 10px;
+            min-width: 48px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .countdown-value {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffffff;
+            line-height: 1.1;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 0.5px;
+        }
+
+        .countdown-label {
+            font-size: 9px;
+            font-weight: 700;
+            color: #ffcccc;
+            text-transform: uppercase;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+        }
+
+        .countdown-separator {
+            font-size: 18px;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            margin-top: -8px;
+        }
+
         .flag-icon {
             width: 22px;
             height: 15px;
@@ -277,7 +365,7 @@
             background-color: rgba(229, 57, 53, 0.06);
         }
 
-        /* Main Content Layar Penuh */
+        /* Main Content */
         .main-content {
             flex: 1;
             width: 100%;
@@ -301,7 +389,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Card Form & Table Container */
         .card {
             background: var(--card-bg);
             padding: 32px;
@@ -379,7 +466,6 @@
             grid-column: span 2;
         }
 
-        /* Button Modern Gradasi */
         button.btn-submit {
             width: 100%;
             background: var(--grad-primary);
@@ -407,7 +493,6 @@
             box-shadow: 0 6px 24px rgba(229, 57, 53, 0.5);
         }
 
-        /* Dashboard Header & Admin Actions */
         .dashboard-top-bar {
             display: flex;
             justify-content: space-between;
@@ -455,13 +540,8 @@
         }
 
         .btn-print { background-color: #4b5563; }
-        .btn-print:hover { background-color: #374151; }
-
         .btn-pdf { background-color: #dc2626; }
-        .btn-pdf:hover { background-color: #b91c1c; }
-
         .btn-excel { background-color: #16a34a; }
-        .btn-excel:hover { background-color: #15803d; }
 
         .stats-grid {
             display: grid;
@@ -477,9 +557,7 @@
             border-radius: var(--radius-md);
             border-top: 4px solid var(--red-main);
             box-shadow: var(--shadow-sm);
-            border-right: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            border-left: 1px solid var(--border-color);
+            border: 1px solid var(--border-color);
             transition: transform 0.2s ease;
         }
 
@@ -503,7 +581,6 @@
             text-transform: uppercase;
         }
 
-        /* GRID SECTION: DIAGRAM PIE & ANALISIS BERDAMPINGAN */
         .analytics-grid-section {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -518,9 +595,8 @@
             flex-direction: column;
         }
 
-        /* Styles Container Chart Pie Diagram */
         .chart-container {
-            max-width: 360px;
+            width: 100%;
             margin: 0 auto;
             position: relative;
             padding: 10px;
@@ -536,7 +612,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* Styling Analisis Urutan Lomba */
         .analysis-content {
             display: flex;
             flex-direction: column;
@@ -584,9 +659,9 @@
             box-shadow: 0 2px 5px rgba(211, 47, 47, 0.3);
         }
 
-        .rank-badge.top-1 { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .rank-badge.top-2 { background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
-        .rank-badge.top-3 { background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%); color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .rank-badge.top-1 { background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%); color: #fff; }
+        .rank-badge.top-2 { background: linear-gradient(135deg, #e0e0e0 0%, #9e9e9e 100%); color: #fff; }
+        .rank-badge.top-3 { background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%); color: #fff; }
 
         .analysis-category-name {
             font-size: 13px;
@@ -603,7 +678,6 @@
             border-radius: 12px;
         }
 
-        /* Search Input & Table Layout */
         .search-box {
             margin-bottom: 20px;
         }
@@ -613,6 +687,7 @@
             overflow-x: auto;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
+            -webkit-overflow-scrolling: touch; /* Smooth scrolling di perangkat iOS */
         }
 
         table {
@@ -652,7 +727,6 @@
             text-transform: uppercase;
         }
 
-        /* Footer */
         .footer {
             text-align: center;
             padding: 20px;
@@ -664,7 +738,7 @@
             font-weight: 500;
         }
 
-        /* Mode Cetak / Print Styles */
+        /* MEDIA QUERIES UNTUK TABLET & HP */
         @media print {
             .running-text-container, .nav-tabs, .search-box, .admin-actions, .footer {
                 display: none !important;
@@ -685,12 +759,14 @@
         }
 
         @media (max-width: 768px) {
-            .hero-banner { padding: 14px 12px; }
-            .header-logo { max-width: 60px; }
-            .hero-banner h1 { font-size: 16px; }
+            .hero-banner { padding: 14px 12px; flex-direction: column; align-items: center; text-align: center; }
+            .hero-content { align-items: center; text-align: center; }
+            .hero-logo { width: 100px; max-height: 75px; }
+            .hero-banner h1 { font-size: 16px; justify-content: center; }
             .hero-banner p { font-size: 12px; margin-bottom: 8px; }
-            .header-widgets { gap: 6px; }
+            .header-widgets { gap: 6px; justify-content: center; }
             .widget-item { font-size: 10px; padding: 4px 8px; }
+            .header-countdown-container { width: 100%; margin-top: 10px; }
             .main-content { padding: 14px; }
             .card { padding: 20px 16px; border-radius: var(--radius-md); }
             .form-grid { grid-template-columns: 1fr; gap: 16px; }
@@ -712,53 +788,81 @@
         <!-- Running Text Banner -->
         <div class="running-text-container">
             <div class="running-text-content">
-                📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU
+                📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU... HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 Datang Lihat Menang, Junjung Tinggi Sportivitas dan Kebersamaan..... Warga Salam KOMPAK SELALU... HAPPY...HAPPY DALAM KEBERSAMAAN&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 📢 "Merdeka itu menang, RUKUN ITU JUARA." ......."Lomba boleh seru, RUKUN NOMOR SATU."........"Beda kepala satu tujuan, warga RT GUYUB dan RUKUN.",,,,,,,,,,,,"Kemerdekaan sejati dimulai dari SENYUM TETANGGA SEBELAH."
             </div>
         </div>
 
         <!-- Hero Header 17 Agustus -->
         <div class="hero-banner">
-            <img src="logohut81.jpg" alt="Logo HUT RI ke-81" class="header-logo">
-            <span class="hero-badge">DIRGAHAYU REPUBLIK INDONESIA</span>
-            <h1>
-                <svg class="flag-icon lg" viewBox="0 0 600 400">
-                    <rect width="600" height="200" fill="#e53935"/>
-                    <rect y="200" width="600" height="200" fill="#ffffff"/>
-                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
-                </svg>
-                SEMARAK PERAYAAN HUT RI KE-81
-                <svg class="flag-icon lg" viewBox="0 0 600 400">
-                    <rect width="600" height="200" fill="#e53935"/>
-                    <rect y="200" width="600" height="200" fill="#ffffff"/>
-                    <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
-                </svg>
-            </h1>
-            <p>Griya Alam Sentul Blok C Salam</p>
+            <div class="hero-logo-container">
+                <img src="logohut81_2.jpg" alt="Logo HUT RI Ke-81" class="hero-logo">
+            </div>
 
-            <!-- WIDGET INTEGRASI REALTIME PADA HEADER -->
-            <div class="header-widgets">
-                <!-- Widget Tanggal & Waktu -->
-                <div class="widget-item">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
-                    <span id="clockDisplay">Memuat Waktu...</span>
+            <div class="hero-content">
+                <span class="hero-badge">DIRGAHAYU REPUBLIK INDONESIA</span>
+                <h1>
+                    <svg class="flag-icon lg" viewBox="0 0 600 400">
+                        <rect width="600" height="200" fill="#e53935"/>
+                        <rect y="200" width="600" height="200" fill="#ffffff"/>
+                        <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                    </svg>
+                    SEMARAK PERAYAAN HUT RI KE-81
+                    <svg class="flag-icon lg" viewBox="0 0 600 400">
+                        <rect width="600" height="200" fill="#e53935"/>
+                        <rect y="200" width="600" height="200" fill="#ffffff"/>
+                        <rect width="600" height="400" fill="none" stroke="#e0e0e0" stroke-width="8"/>
+                    </svg>
+                </h1>
+                <p>Komplek Griya Alam Sentul Blok C Salam</p>
+
+                <div class="header-widgets">
+                    <div class="widget-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/></svg>
+                        <span id="clockDisplay">Memuat Waktu...</span>
+                    </div>
+
+                    <div class="widget-item">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5-2.5z"/></svg>
+                        <span id="locationDisplay">Mendeteksi Lokasi...</span>
+                    </div>
+
+                    <div class="widget-item">
+                        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+                        <span id="weatherDisplay">Memuat Suhu...</span>
+                    </div>
+
+                    <div class="widget-item db-status-widget" onclick="checkDatabaseConnection()" title="Klik untuk tes ulang koneksi database">
+                        <span class="status-dot" id="dbStatusDot"></span>
+                        <span id="dbStatusText">Checking DB...</span>
+                    </div>
                 </div>
+            </div>
 
-                <!-- Widget Lokasi -->
-                <div class="widget-item">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5-2.5z"/></svg>
-                    <span id="locationDisplay">Mendeteksi Lokasi...</span>
+            <div class="header-countdown-container">
+                <div class="countdown-title">
+                    <svg style="width:12px;height:12px;fill:#ffccd5;" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                    Hitung Mundur Menuju Perlombaan
                 </div>
-
-                <!-- Widget Suhu / Cuaca -->
-                <div class="widget-item">
-                    <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
-                    <span id="weatherDisplay">Memuat Suhu...</span>
-                </div>
-
-                <!-- Widget Status Koneksi Google Sheets Database -->
-                <div class="widget-item db-status-widget" onclick="checkDatabaseConnection()" title="Klik untuk tes ulang koneksi database">
-                    <span class="status-dot" id="dbStatusDot"></span>
-                    <span id="dbStatusText">Checking DB...</span>
+                <div class="countdown-boxes">
+                    <div class="countdown-box">
+                        <span class="countdown-value" id="cdDays">00</span>
+                        <span class="countdown-label">Hari</span>
+                    </div>
+                    <div class="countdown-separator">:</div>
+                    <div class="countdown-box">
+                        <span class="countdown-value" id="cdHours">00</span>
+                        <span class="countdown-label">Jam</span>
+                    </div>
+                    <div class="countdown-separator">:</div>
+                    <div class="countdown-box">
+                        <span class="countdown-value" id="cdMinutes">00</span>
+                        <span class="countdown-label">Menit</span>
+                    </div>
+                    <div class="countdown-separator">:</div>
+                    <div class="countdown-box">
+                        <span class="countdown-value" id="cdSeconds">00</span>
+                        <span class="countdown-label">Detik</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -838,7 +942,6 @@
             <div id="dashboard-tab" class="tab-content">
                 <div class="dashboard-top-bar">
                     <h2 class="dashboard-header">📊 Rekap Pendaftaran Warga</h2>
-                    <!-- Tombol Admin Export & Print -->
                     <div class="admin-actions">
                         <button class="btn-admin btn-print" onclick="actionPrint()">🖨️ Print</button>
                         <button class="btn-admin btn-pdf" onclick="actionExportPDF()">📄 Download PDF</button>
@@ -846,7 +949,6 @@
                     </div>
                 </div>
                 
-                <!-- Grid Cards Stats -->
                 <div class="stats-grid" id="statsGrid">
                     <div class="stat-card">
                         <h3 id="totalPeserta">0</h3>
@@ -854,17 +956,14 @@
                     </div>
                 </div>
 
-                <!-- GRID SECTION: DIAGRAM PIE & ANALISIS URUTAN LOMBA BERDAMPINGAN -->
                 <div class="analytics-grid-section">
-                    <!-- CARD 1: DIAGRAM PIE KATEGORI -->
                     <div class="card analytics-card">
-                        <h3 class="chart-card-title">🥧 Persentase Pendaftar Berdasarkan Kategori</h3>
+                        <h3 class="chart-card-title">📊 Diagram Batang Pendaftar Berdasarkan Kategori</h3>
                         <div class="chart-container">
-                            <canvas id="categoryPieChart"></canvas>
+                            <canvas id="categoryBarChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- CARD 2: ANALISIS URUTAN LOMBA TERBANYAK -->
                     <div class="card analytics-card">
                         <h3 class="chart-card-title">🏆 Analisis Urutan Kategori Terfavorit</h3>
                         <div class="analysis-content" id="analysisContent">
@@ -879,7 +978,6 @@
                     </div>
                 </div>
 
-                <!-- Table Container -->
                 <div class="card">
                     <div class="search-box">
                         <input type="text" id="searchInput" onkeyup="filterTable()" placeholder="🔍 Cari nama peserta, blok rumah, atau cabang lomba...">
@@ -902,17 +1000,14 @@
 
         </div>
 
-        <!-- Footer -->
         <div class="footer">
-            &copy; GusPur — Semarak Perayaan HUT RI Ke-81
+            &copy; AgusPurwanto — Semarak Perayaan HUT RI Ke-81
         </div>
     </div>
 
     <script>
-        // Script Google Sheet URL
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvlGL5U2TpKGvOF8bdrznHHYZ_p3T8qaEdqxsFgrwFdBDzwhDlcT0yu7FF4gcbDUCK/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx6sEoy0hY9098oUwP-jhSlnzfcJl4o6e4O_xXjgO1tVgtNcnzCWFYGKzkT4k4j9oG2/exec";
 
-        // Clock Realtime Function (Tanggal & Jam)
         function updateClock() {
             const now = new Date();
             const options = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
@@ -923,7 +1018,32 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Location & Weather API Realtime
+        function updateCountdown() {
+            const targetDate = new Date("August 16, 2026 00:00:00").getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+
+            if (distance < 0) {
+                document.getElementById("cdDays").innerText = "00";
+                document.getElementById("cdHours").innerText = "00";
+                document.getElementById("cdMinutes").innerText = "00";
+                document.getElementById("cdSeconds").innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("cdDays").innerText = String(days).padStart(2, '0');
+            document.getElementById("cdHours").innerText = String(hours).padStart(2, '0');
+            document.getElementById("cdMinutes").innerText = String(minutes).padStart(2, '0');
+            document.getElementById("cdSeconds").innerText = String(seconds).padStart(2, '0');
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
         async function fetchWeatherData(lat, lon) {
             try {
                 const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
@@ -954,18 +1074,16 @@
         }
         initLocationAndWeather();
 
-        // REALTIME GOOGLE SHEETS DATABASE CONNECTION CHECKER
         async function checkDatabaseConnection() {
             const dot = document.getElementById("dbStatusDot");
             const text = document.getElementById("dbStatusText");
 
-            // Indikator Loading / Connecting
             dot.className = "status-dot";
             text.innerText = "Checking DB...";
 
             try {
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 6000); // 6 detik timeout
+                const timeoutId = setTimeout(() => controller.abort(), 6000);
 
                 const response = await fetch(SCRIPT_URL + "?action=getDashboard", { 
                     method: "GET",
@@ -985,11 +1103,9 @@
             }
         }
 
-        // Jalankan tes awal koneksi DB dan jalankan ulang secara berkala setiap 10 detik
         checkDatabaseConnection();
         setInterval(checkDatabaseConnection, 10000);
 
-        // Data Pilihan Lomba
         const dataLomba = {
             "paud": {
                 label: "PAUD, TK + SD (Maks. Kelas 1)",
@@ -1161,7 +1277,6 @@
                 document.getElementById("lomba").disabled = true;
                 document.getElementById("infoLomba").style.display = "none";
                 
-                // Refresh status database setelah menyimpan data
                 checkDatabaseConnection();
             })
             .catch(err => {
@@ -1171,17 +1286,15 @@
             });
         }
 
-        // Variable global chart agar dapat diperbarui
-        let categoryPieChartInstance = null;
+        let categoryBarChartInstance = null;
 
-        function renderPieChart(stats) {
-            const ctx = document.getElementById('categoryPieChart').getContext('2d');
-            
+        function renderBarChart(stats) {
+            const ctx = document.getElementById('categoryBarChart').getContext('2d');
             const labels = Object.keys(stats);
             const dataValues = Object.values(stats);
 
-            if (categoryPieChartInstance) {
-                categoryPieChartInstance.destroy();
+            if (categoryBarChartInstance) {
+                categoryBarChartInstance.destroy();
             }
 
             const chartColors = [
@@ -1189,74 +1302,49 @@
                 '#8e24aa', '#00acc1', '#fdd835', '#d81b60', '#3949ab'
             ];
 
-            categoryPieChartInstance = new Chart(ctx, {
-                type: 'pie',
+            categoryBarChartInstance = new Chart(ctx, {
+                type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
+                        label: 'Jumlah Peserta',
                         data: dataValues,
                         backgroundColor: chartColors.slice(0, labels.length),
-                        borderWidth: 2,
-                        borderColor: '#ffffff'
+                        borderColor: chartColors.slice(0, labels.length),
+                        borderWidth: 1,
+                        borderRadius: 6
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: true,
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: { size: 11, family: 'sans-serif', weight: '600' },
-                                boxWidth: 12,
-                                padding: 10
-                            }
-                        },
+                        legend: { display: false },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    const label = context.label || '';
-                                    const value = context.raw || 0;
-                                    const total = context.chart.data.datasets[0].data.reduce((a, b) => a + b, 0);
-                                    const percentage = total > 0 ? ((value / total) * 100).toFixed(1) + '%' : '0%';
-                                    return ` ${label}: ${value} Peserta (${percentage})`;
+                                    return ` Jumlah: ${context.raw} Peserta`;
                                 }
                             }
                         }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { precision: 0, font: { size: 11, weight: '600' } },
+                            grid: { color: '#e5e7eb' }
+                        },
+                        x: {
+                            ticks: { font: { size: 10, weight: '600' }, maxRotation: 45, minRotation: 0 },
+                            grid: { display: false }
+                        }
                     }
-                },
-                plugins: [{
-                    id: 'datalabels',
-                    afterDraw(chart) {
-                        const { ctx, chartArea: { width, height } } = chart;
-                        chart.data.datasets.forEach((dataset, i) => {
-                            chart.getDatasetMeta(i).data.forEach((datapoint, index) => {
-                                const { x, y } = datapoint.tooltipPosition();
-                                const value = dataset.data[index];
-                                
-                                if (value > 0) {
-                                    ctx.fillStyle = '#ffffff';
-                                    ctx.font = 'bold 11px sans-serif';
-                                    ctx.textAlign = 'center';
-                                    ctx.textBaseline = 'middle';
-                                    
-                                    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-                                    ctx.shadowBlur = 4;
-                                    ctx.fillText(value + ' Peserta', x, y);
-                                    ctx.shadowBlur = 0;
-                                }
-                            });
-                        });
-                    }
-                }]
+                }
             });
         }
 
-        // Fungsi Render Analisis Urutan Lomba Terbanyak
         function renderAnalysisList(stats) {
             const container = document.getElementById('analysisContent');
-            
-            // Ubah object stats menjadi array [ [namaKategori, jumlah], ... ] lalu urutkan dari terbesar ke terkecil
             const sortedStats = Object.entries(stats).sort((a, b) => b[1] - a[1]);
 
             if (sortedStats.length === 0 || sortedStats.every(item => item[1] === 0)) {
@@ -1338,7 +1426,7 @@
                         `;
                     });
 
-                    renderPieChart(data.stats);
+                    renderBarChart(data.stats);
                     renderAnalysisList(data.stats);
                 }
             })
@@ -1354,7 +1442,6 @@
             });
         }
 
-        // ==================== FITUR ADMIN & EXPORT ====================
         function checkAdminAuth(callback) {
             const pwd = prompt("🔒 Masukkan Password Admin untuk melanjutkan:");
             if (pwd === "admin123") {
@@ -1365,9 +1452,7 @@
         }
 
         function actionPrint() {
-            checkAdminAuth(() => {
-                window.print();
-            });
+            checkAdminAuth(() => { window.print(); });
         }
 
         function actionExportExcel() {

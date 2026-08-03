@@ -88,7 +88,7 @@
             100% { transform: translate(-100%, 0); }
         }
 
-        /* Hero Banner / Header */
+        /* Hero Banner / Header - Dioptimalkan untuk Responsif */
         .hero-banner {
             background: var(--grad-primary);
             color: white;
@@ -126,6 +126,7 @@
             flex-direction: column;
             align-items: center;
             text-align: center;
+            min-width: 280px;
         }
 
         .hero-banner h1 {
@@ -609,6 +610,7 @@
             margin: 0 auto;
             position: relative;
             padding: 10px;
+            flex-grow: 1;
         }
 
         .chart-card-title {
@@ -696,7 +698,7 @@
             overflow-x: auto;
             border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling di perangkat iOS */
+            -webkit-overflow-scrolling: touch;
         }
 
         table {
@@ -747,7 +749,7 @@
             font-weight: 500;
         }
 
-        /* MEDIA QUERIES UNTUK TABLET & HP */
+        /* RESPONSIF MEDIA QUERIES UNTUK TABLET & HP */
         @media print {
             .running-text-container, .nav-tabs, .search-box, .admin-actions, .footer {
                 display: none !important;
@@ -768,25 +770,45 @@
         }
 
         @media (max-width: 768px) {
-            .hero-banner { padding: 14px 12px; flex-direction: column; align-items: center; text-align: center; }
-            .hero-content { align-items: center; text-align: center; }
-            .hero-logo { width: 100px; max-height: 75px; }
-            .hero-banner h1 { font-size: 16px; justify-content: center; }
+            .hero-banner { 
+                padding: 14px 12px; 
+                flex-direction: column; 
+                align-items: center; 
+                text-align: center; 
+            }
+            .hero-content { 
+                align-items: center; 
+                text-align: center; 
+                width: 100%;
+            }
+            .hero-logo { width: 90px; max-height: 70px; }
+            .hero-banner h1 { font-size: 15px; justify-content: center; }
             .hero-banner p { font-size: 12px; margin-bottom: 8px; }
             .header-widgets { gap: 6px; justify-content: center; }
             .widget-item { font-size: 10px; padding: 4px 8px; }
             .header-countdown-container { width: 100%; margin-top: 10px; }
-            .main-content { padding: 14px; }
-            .card { padding: 20px 16px; border-radius: var(--radius-md); }
-            .form-grid { grid-template-columns: 1fr; gap: 16px; }
+            .main-content { padding: 12px; }
+            .card { padding: 16px 12px; border-radius: var(--radius-md); }
+            .form-grid { grid-template-columns: 1fr; gap: 14px; }
             .form-group.full-width, .info-box, button.btn-submit { grid-column: span 1; }
-            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-            .stat-card { padding: 16px; }
-            .stat-card h3 { font-size: 24px; }
-            .chart-container { max-width: 100%; }
-            .dashboard-top-bar { flex-direction: column; align-items: flex-start; }
-            .admin-actions { width: 100%; }
-            .btn-admin { flex: 1; justify-content: center; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .stat-card { padding: 14px; }
+            .stat-card h3 { font-size: 22px; }
+            .analysis-card, .favorite-card { min-height: 360px; }
+            .favorite-card canvas { height: 280px !important; }
+            .chart-container { max-width: 100%; padding: 2px; }
+            .dashboard-top-bar { flex-direction: column; align-items: stretch; gap: 12px; }
+            .admin-actions { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .btn-admin { padding: 8px 10px; font-size: 11px; justify-content: center; width: 100%; }
+            .tab-btn { font-size: 12px; padding: 10px 8px; }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .admin-actions { grid-template-columns: 1fr; }
+            .countdown-boxes { gap: 4px; }
+            .countdown-box { min-width: 40px; padding: 4px 6px; }
+            .countdown-value { font-size: 16px; }
         }
     </style>
 </head>
@@ -1404,8 +1426,10 @@
                         backgroundColor: ["#2563EB","#10B981","#F59E0B","#EF4444","#8B5CF6","#06B6D4","#EC4899","#84CC16","#F97316"],
                         borderColor: "#fff",
                         borderWidth: 2,
-                        borderRadius: 12,
-                        hoverBorderWidth: 3
+                        borderRadius: 8,
+                        hoverBorderWidth: 3,
+                        barThickness: 'flex',        /* Membuat bar otomatis menyesuaikan */
+                        maxBarThickness: 45          /* Mengatur batas ketebalan maksimal agar terlihat tebal dan proporsional */
                     }]
                 },
                 options: {
